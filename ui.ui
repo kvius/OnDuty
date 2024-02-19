@@ -355,6 +355,11 @@
         <string>Не заступає до</string>
        </property>
       </column>
+      <column>
+       <property name="text">
+        <string>№</string>
+       </property>
+      </column>
      </widget>
      <widget class="QPushButton" name="stats_submit">
       <property name="geometry">

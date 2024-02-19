@@ -9,6 +9,7 @@ import warnings
 import sys
 
 from test import *
+print(id)
 print(cant_stay)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)  # Ignore warnings
@@ -29,6 +30,17 @@ class DatabaseManager:
             password=self.password,
             database=self.db_name
         )
+
+    def load_data(self, query):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            self.connection.commit()  # Добавляем коммит изменений
+            print(f"Query executed successfully: {query}")
+        except mysql.connector.Error as e:
+            print(f"MySQL Error: {e}")
+        finally:
+            cursor.close()
 
     def execute_query(self, query):
         cursor = self.connection.cursor()
@@ -123,6 +135,10 @@ class MyWindow(QMainWindow):
 
 
         # table
+        self.combogroup.currentIndexChanged.connect(self.load_data_into_table)
+        self.comboposition.currentIndexChanged.connect(self.load_data_into_table)
+        self.combosex.currentIndexChanged.connect(self.load_data_into_table)
+
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.cellClicked.connect(self.on_cell_clicked)
 
@@ -138,7 +154,7 @@ class MyWindow(QMainWindow):
         self.stackedWidget.setCurrentWidget(self.settings_pg)
 
     def display_stats(self):
-        self.stats_submit.clicked.connect(self.apply_changes_stats)
+        self.stats_submit.clicked.connect(self.submit)
         self.load_data_into_table()
         self.stackedWidget.setCurrentWidget(self.stats_pg)
 
@@ -147,6 +163,8 @@ class MyWindow(QMainWindow):
         self.par=0
         self.cel_prev_row = None
         self.cel_prev_col = None
+        self.query_arr=[]
+
         group = self.combogroup.currentText()
         position = self.comboposition.currentText()
         sex = self.combosex.currentText()
@@ -174,7 +192,6 @@ class MyWindow(QMainWindow):
             query = f"{base_query} ORDER BY id"
         print(query)
         results = self.db_manager.execute_query(query)
-        results = [row[1:] for row in results]
         print(results)
         self.table.setRowCount(0)  # Очищаем таблицу перед заполнением
 
@@ -182,10 +199,11 @@ class MyWindow(QMainWindow):
             self.table.insertRow(row_number)
             for column_number, data in enumerate(row_data):
                 self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+        self.table.hideColumn(id)
 
         date_column_index = 11  # replace with the actual index of your date column
         self.date_delegate = DateDelegate()
-        self.table.setItemDelegateForColumn(date_column_index, self.date_delegate)
+        self.table.setItemDelegateForColumn(cant_stay, self.date_delegate)
 
     def selection_changed(self, selected, deselected):
         for index in selected.indexes():
@@ -205,7 +223,7 @@ class MyWindow(QMainWindow):
         if column == date_column_index:
             self.table.openPersistentEditor(self.table.item(row, column))
             self.par=1
-        if column == 2 or column==3:
+        if column == rank or column==position:
             self.par = 2
             # Создаем виджет, который будет содержать QLineEdit и QPushButton
             self.editor_widget = QWidget()
@@ -236,20 +254,16 @@ class MyWindow(QMainWindow):
         editor = self.table.indexWidget(index)
         item = self.table.item(row, column)
         if self.date_delegate.noDate < editor.date().toString("yyyy-MM-dd"):
-            self.apply_changes_stats(row,column)#izmena
             if editor and isinstance(editor, QDateEdit):
                 # Manually commit the data to the model
                 self.date_delegate.setModelData(editor, self.table.model(), index)
                 # Close the editor
                 item = self.table.item(row, column)
                 self.table.closePersistentEditor(item)
-                self.apply_changes(row, column)
+                self.apply_changes_stats(row, column)
         else:
             self.table.closePersistentEditor(item)
-            print(self.date_delegate.noDate, item.text())
-            if self.date_delegate.noDate > item.text():
-                print(1)
-                item.setText("None")
+            item.setText("None")
 
 
     def save_changes(self, row, column):
@@ -269,11 +283,17 @@ class MyWindow(QMainWindow):
 
     def apply_changes_stats(self,row,column):
         item = self.table.item(row, column)
+        id_txt = self.table.item(row, id).text()
         item.setForeground(QColor(255, 0, 0))
-        self.query_txt=self.query_txt+f"`{columns[column]}` = '{item.text()}' WHERE (`id` = '{row}'),"
+
+        # Формирование текста запроса для каждого изменения
+        self.query_arr.append(f"UPDATE kurs SET `{columns[column]}` = '{item.text()}' WHERE `id` = '{id_txt}';")
+
     def submit(self):
-        query="UPDATE `kurs`.`kurs`"+self.query_txt[:-1]+";"
-        print(query)
+        print(self.query_arr)
+        for query in self.query_arr:
+            db_manager.load_data(query)
+
 
 
 if __name__ == "__main__":

@@ -13,19 +13,19 @@ cant_stay = 11
 id = 12
 
 columns = {
-    1: "id",
-    2: "pib",
-    3: "rank",
-    4: "position",
-    5: "group",
-    6: "naryad",
-    7: "naryad_sb",
-    8: "kurs",
-    9: "nk",
-    10: "chepe",
-    11: "chepe_sb",
-    12: "sex",
-    13: "cant_stay"
+    pib: "pib",
+    rank: "rank",
+    position: "position",
+    group: "group",
+    naryad: "naryad",
+    naryad_sb: "naryad_sb",
+    kurs: "kurs",
+    nk: "nk",
+    chepe: "chepe",
+    chepe_sb: "chepe_sb",
+    sex: "sex",
+    cant_stay: "cant_stay",
+    id: "id",
 }
 #
 # # Перебор ассоциативного массива для создания переменных
