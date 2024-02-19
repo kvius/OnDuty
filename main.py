@@ -301,11 +301,14 @@ if __name__ == "__main__":
         app = QApplication(sys.argv)
         db_manager = DatabaseManager(host, user, password, database)
         db_manager.connect()
-        login_window = LoginWindow(db_manager)
-        login_window.show()
+        # Directly create and show the MyWindow instead of LoginWindow
+        main_window = MyWindow(db_manager)
+        main_window.show()
         sys.exit(app.exec_())
     except Exception as ex:
         print("[INFO] Error", ex)
     finally:
-        db_manager.close()
-        print("[INFO] connection closed")
+        if 'db_manager' in locals() or 'db_manager' in globals():
+            db_manager.close()
+        print("[INFO] Connection closed")
+
