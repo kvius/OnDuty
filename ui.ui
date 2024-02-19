@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1126</width>
+    <height>657</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">b</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>291</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="schedule_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Розклад</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/calendar.png</normaloff>D:/Downloads/calendar.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="stats_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Статистика</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/stats.png</normaloff>D:/Downloads/stats.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="settings_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Налаштування</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/setting.png</normaloff>D:/Downloads/setting.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="logout_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Вийти</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/logout.png</normaloff>D:/Downloads/logout.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>20</y>
+      <width>791</width>
+      <height>601</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>3</number>
+    </property>
+    <widget class="QWidget" name="schedule_pg">
+     <widget class="QLabel" name="schedule_l">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>70</y>
+        <width>68</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>РАСПИСАНИЕ</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="logout_pg">
+     <widget class="QLabel" name="logout_l">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>200</y>
+        <width>68</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>ТИПА ВЫШЕЛ</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="settings_pg">
+     <widget class="QLabel" name="settings_l">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>0</y>
+        <width>181</width>
+        <height>39</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>НАСТРОЙКИ</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="stats_pg">
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>0</y>
+        <width>194</width>
+        <height>39</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>СТАТИСТИКА</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>50</y>
+        <width>381</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">width:700px;
+</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="combogroup">
+         <item>
+          <property name="text">
+           <string>Група</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>13</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>14</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>15</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboposition">
+         <item>
+          <property name="text">
+           <string>Посада</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Сержанти</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Курсанти</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="combosex">
+         <item>
+          <property name="text">
+           <string>Стать</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Чоловік</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Жінка</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QTableWidget" name="table">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>90</y>
+        <width>791</width>
+        <height>471</height>
+       </rect>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+      </property>
+      <column>
+       <property name="text">
+        <string>Фамілія</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Звання</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Посада</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Група</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Наряд</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Наряд Сб-Нд</string>
+       </property>
+       <property name="font">
+        <font>
+         <kerning>false</kerning>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Курс</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>НК</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>ЧП</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>ЧП Сб-Нд</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>стать</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Не заступає до</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QPushButton" name="stats_submit">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>570</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Submit</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
