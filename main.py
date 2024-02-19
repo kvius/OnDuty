@@ -80,8 +80,8 @@ class DateDelegate(QItemDelegate):
     def createEditor(self, parent, option, index):
         editor = QDateEdit(parent)
         editor.setCalendarPopup(True)
-        editor.setDisplayFormat('dd-MM-yyyy')
-        self.noDate = QDate().currentDate().toString("yyyy-MM-dd")
+        editor.setDisplayFormat('yyyy-MM-dd')
+        self.noDate = QDate().currentDate()
         print(self.noDate)
         editor.setDate(QDate().currentDate())
         return editor
@@ -253,7 +253,7 @@ class MyWindow(QMainWindow):
         index = self.table.model().index(row, column)
         editor = self.table.indexWidget(index)
         item = self.table.item(row, column)
-        if self.date_delegate.noDate < editor.date().toString("yyyy-MM-dd"):
+        if self.date_delegate.noDate < editor.date():
             if editor and isinstance(editor, QDateEdit):
                 # Manually commit the data to the model
                 self.date_delegate.setModelData(editor, self.table.model(), index)
