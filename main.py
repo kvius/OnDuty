@@ -70,7 +70,6 @@ class DatabaseManager:
             print(f"MySQL Error: {e}")
             cursor.close()
             return None
-
     def close(self):
         if self.connection:
             self.connection.close()
@@ -293,6 +292,7 @@ class MyWindow(QMainWindow):
         print(self.query_arr)
         for query in self.query_arr:
             db_manager.load_data(query)
+        self.load_data_into_table()
 
 
 
