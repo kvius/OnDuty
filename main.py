@@ -1,7 +1,7 @@
 import mysql.connector
 from config import host, user, password, database
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QColor
@@ -134,6 +134,8 @@ class MyWindow(QMainWindow):
 
 
         # table
+        self.current_widget=None
+
         self.combogroup.currentIndexChanged.connect(self.load_data_into_table)
         self.comboposition.currentIndexChanged.connect(self.load_data_into_table)
         self.combosex.currentIndexChanged.connect(self.load_data_into_table)
@@ -207,41 +209,46 @@ class MyWindow(QMainWindow):
     def selection_changed(self, selected, deselected):
         for index in selected.indexes():
             print(f"Выделен элемент: строка {index.row()}, столбец {index.column()}")
+        #
+        #     if isinstance(editor, QDateEdit):
+        # # Теперь "editor" содержит ссылку на открытый QDateEdit
+        # # ... (сохраните "editor" в переменную)
 
     def on_cell_clicked(self, row, column):
-        print(self.par)
-        if ( self.cel_prev_row != row or self.cel_prev_col != column) and self.par != 0:
-            if self.par == 1:
-                self.save_changes_datepicker()
-            if self.par == 2:
-                self.save_changes(self.cel_prev_row,self.cel_prev_col)
-            self.par=0
+        if ( self.cel_prev_row != row or self.cel_prev_col != column):
+            if self.current_widget:
+                if isinstance(self.current_widget, QDateEdit):
+                    self.save_changes_datepicker()
+                if isinstance(self.current_widget, QComboBox):
+                    self.save_changes(self.cel_prev_row,self.cel_prev_col)
         self.cel_prev_row = row
         self.cel_prev_col = column
         date_column_index = 11  # replace with the actual index of your date column
         if column == date_column_index:
             self.table.openPersistentEditor(self.table.item(row, column))
+            self.current_widget = self.table.cellWidget(row, column)
             self.par=1
         if column == rank or column==position:
-            self.par = 2
-            # Создаем виджет, который будет содержать QLineEdit и QPushButton
-            self.editor_widget = QWidget()
-            self.editor_layout = QHBoxLayout(self.editor_widget)
+            combo_box = QComboBox()
+            self.prev_combobox_text=self.table.item(row, column).text()
+            # Determine possible values based on the column
+            if column == rank:
+                combo_box.addItems(["сол.", "с-т"])  # Replace with your rank values
+            else:  # column == position
+                combo_box.addItems(["курсант", "командир","сержант","старшина"])  # Replace with your position values
 
-            # QLineEdit для редактирования текста
-            self.line_edit = QLineEdit()
-            self.line_edit.setText(self.table.item(row, column).text() if self.table.item(row, column) else "")
+            # Set the current value of the combobox
+            current_text = self.table.item(row, column).text() if self.table.item(row, column) else ""
+            combo_box.setCurrentText(current_text)
 
-            # QPushButton для сохранения изменений
+            # Connect the currentIndexChanged signal
+            combo_box.currentIndexChanged.connect(lambda idx, row=row, column=column: self.save_changes(row, column))
 
-            # Добавляем QLineEdit и QPushButton в QHBoxLayout
-            self.editor_layout.addWidget(self.line_edit)
-            self.editor_layout.setContentsMargins(0, 0, 0, 0)
-            self.editor_widget.setLayout(self.editor_layout)
-
-            # Устанавливаем созданный виджет в ячейку таблицы
-            self.table.setCellWidget(row, column, self.editor_widget)
+            # Set the combobox as the cell widget
+            self.table.setCellWidget(row, column, combo_box)
             self.table.resizeColumnsToContents()
+
+            self.current_widget = self.table.cellWidget(row, column)
 
     def save_changes_datepicker(self):
 
@@ -263,22 +270,22 @@ class MyWindow(QMainWindow):
         else:
             self.table.closePersistentEditor(item)
             item.setText("None")
+        self.current_widget=None
 
 
     def save_changes(self, row, column):
-        # Получаем текст из QLineEdit
+        # Get the selected text from the combobox
+        combo_box = self.table.cellWidget(row, column)
+        text = combo_box.currentText()
 
-        text = self.line_edit.text()
-
-        # Удаляем виджет редактирования из ячейки и заменяем его на QTableWidgetItem с новым текстом
+        # Remove the combobox and replace it with the updated text
         self.table.removeCellWidget(row, column)
         self.table.setItem(row, column, QTableWidgetItem(text))
-
-        # Вызываем resizeColumnsToContents для выравнивания ширины колонок по содержимому
         self.table.resizeColumnsToContents()
-
-        self.apply_changes_stats(row, column)
-        self.par=0
+        print(self.prev_combobox_text, text)
+        if self.prev_combobox_text != text:
+            self.apply_changes_stats(row, column)
+        self.current_widget=None
 
     def apply_changes_stats(self,row,column):
         item = self.table.item(row, column)
