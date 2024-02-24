@@ -1,7 +1,7 @@
 import mysql.connector
 from config import host, user, password, database
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox,QMessageBox
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QColor
@@ -296,10 +296,22 @@ class MyWindow(QMainWindow):
         self.query_arr.append(f"UPDATE kurs SET `{columns[column]}` = '{item.text()}' WHERE `id` = '{id_txt}';")
 
     def submit(self):
-        print(self.query_arr)
-        for query in self.query_arr:
-            db_manager.load_data(query)
-        self.load_data_into_table()
+        if self.current_widget:
+            if isinstance(self.current_widget, QDateEdit):
+                self.save_changes_datepicker()
+            if isinstance(self.current_widget, QComboBox):
+                self.save_changes(self.cel_prev_row, self.cel_prev_col)
+        reply = QMessageBox.question(self, 'Confirmation',
+                                     'Are you sure you want to save the changes?',
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            print(self.query_arr)
+            for query in self.query_arr:
+                db_manager.load_data(query)
+            self.load_data_into_table()
+
+
 
 
 
