@@ -25,6 +25,7 @@ class LoginWindow(QMainWindow):
         self.db_manager = db_manager
         self.submit.clicked.connect(self.attempt_login)
         self.login.setPlaceholderText("Login")
+        self.login.setFocus()
         self.password.setPlaceholderText("Password")
 
     def attempt_login(self):
@@ -37,14 +38,15 @@ class LoginWindow(QMainWindow):
 
         user_data = self.db_manager.check_credentials(username, password)
         if user_data:
-            self.accept_login(user_data['role'])
+            self.accept_login(user_data['role'],user_data['group'])
         else:
             print("Ошибка входа", "Неверный логин или пароль.")
 
-    def accept_login(self, user_role):
-        self.main_window = MyWindow(self.db_manager)  # Создаем экземпляр главного окна
+    def accept_login(self, user_role,user_group):
+        self.main_window = MyWindow(self.db_manager,user_role,user_group)  # Создаем экземпляр главного окна
         self.main_window.show()  # Показываем главное окно
         self.close()  # Закрываем окно логина
+
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
@@ -55,9 +57,15 @@ class LoginWindow(QMainWindow):
 
 # Основной класс главного окна
 class MyWindow(QMainWindow):
-    def __init__(self, db_manager):
+    def __init__(self, db_manager,role,group):
         super(MyWindow, self).__init__()
         loadUi("ui.ui", self)
+
+        self.role_data= {
+                "role":role,
+                "group":group,
+            }
+        print(self.role_data)
 
         self.db_manager = db_manager
 
@@ -68,7 +76,7 @@ class MyWindow(QMainWindow):
 
         # table
         self.stats_manager = StatsManager(self.combogroup, self.comboposition, self.combosex, self.stats_submit,
-                                          db_manager,self.table, self)
+                                          db_manager,self.table, self,self.role_data)
 
 
     def display_schedule(self):
@@ -76,8 +84,12 @@ class MyWindow(QMainWindow):
         self.schedule_l.setText(result[0][1])
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
 
+
     def logout(self):
-        self.stackedWidget.setCurrentWidget(self.logout_pg)
+        # Placeholder (add confirmation dialog if you like)
+        self.login_window = LoginWindow(self.db_manager)
+        self.login_window.show()
+        self.close()  # Close the current main window
 
     def display_settings(self):
         self.stackedWidget.setCurrentWidget(self.settings_pg)
@@ -92,9 +104,9 @@ if __name__ == "__main__":
         app = QApplication(sys.argv)
         db_manager = DatabaseManager(host, user, password, database)
         db_manager.connect()
-        # Directly create and show the MyWindow instead of LoginWindow
-        main_window = MyWindow(db_manager)
-        main_window.show()
+        # Create and show the LoginWindow instead of MyWindow
+        login_window = LoginWindow(db_manager)
+        login_window.show()
         sys.exit(app.exec_())
     except Exception as ex:
         print("[INFO] Error", ex)

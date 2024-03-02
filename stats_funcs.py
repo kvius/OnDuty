@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox,QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow,QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox,QMessageBox
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QDate, Qt
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor,QIcon
 import warnings
 import sys
 import datedelegate
@@ -11,7 +11,7 @@ from test import *
 
 
 class StatsManager:
-    def __init__(self, combogroup, comboposition, combosex, stats_submit, db_manager, table,parent):
+    def __init__(self, combogroup, comboposition, combosex, stats_submit, db_manager, table,parent,role_data):
         self.combogroup = combogroup
         self.comboposition = comboposition
         self.combosex = combosex
@@ -19,6 +19,9 @@ class StatsManager:
         self.db_manager = db_manager
         self.table = table
         self.parent=parent
+
+        self.role=role_data["role"]
+        self.group = role_data["group"]
 
         self.current_widget = None
 
@@ -28,10 +31,13 @@ class StatsManager:
         self.combogroup.currentIndexChanged.connect(self.load_data_into_table)
         self.comboposition.currentIndexChanged.connect(self.load_data_into_table)
         self.combosex.currentIndexChanged.connect(self.load_data_into_table)
+
         self.stats_submit.clicked.connect(self.submit)
 
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.cellClicked.connect(self.on_cell_clicked)
+
+
 
     def load_data_into_table(self):
         self.query_txt = ""
@@ -40,19 +46,19 @@ class StatsManager:
         self.cel_prev_col = None
         self.query_arr=[]
 
-        group = self.combogroup.currentText()
-        position = self.comboposition.currentText()
+        grp = self.combogroup.currentText()
+        pos = self.comboposition.currentText()
         sex = self.combosex.currentText()
 
         # Initialize the base query and conditions
         base_query = "SELECT * FROM kurs"
         conditions = []
-        print(group, position, sex)
+        print(grp, pos, sex)
         # Check each combo box for a user-selected value (assuming default values indicate 'no filter')
-        if group != "Група":
-            conditions.append(f"`group` = '{group}'")  # Replace group_column_name with your actual column name
-        if position != "Посада":
-            if position == "Курсанти":
+        if grp != "Група":
+            conditions.append(f"`group` = '{grp}'")  # Replace group_column_name with your actual column name
+        if pos != "Посада":
+            if pos == "Курсанти":
                 conditions.append(f"position = 'Курсант'")  # Replace position_column_name with your actual column name
             else:  # sergants
                 conditions.append(f"(position = 'Сержант' or position = 'Командир'  or position = 'Старшина' )")
@@ -70,15 +76,30 @@ class StatsManager:
         print(results)
         self.table.setRowCount(0)  # Очищаем таблицу перед заполнением
 
+        self.icon = QIcon('edit.png')
+
         for row_number, row_data in enumerate(results):
             self.table.insertRow(row_number)
             for column_number, data in enumerate(row_data):
-                self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
-        self.table.hideColumn(id)
+                # Создаем элемент таблицы с данными
+                item = QTableWidgetItem(str(data))
 
+                # Проверяем, находится ли текущая колонка в списке индексов для специальной обработк
+                if (column_number in [rank, position, cant_stay] and  self.role == "senioradmin") or (column_number == cant_stay and (self.role == "admin" and str(row_data[group]) == self.group)) :
+                    print(1)
+                    item.setIcon(self.icon)
+
+                    # Также можно добавить tooltip, если нужно
+                    item.setToolTip("Это поле можно редактировать")
+
+                # Устанавливаем элемент в таблицу
+                self.table.setItem(row_number, column_number, item)
+        self.table.hideColumn(id)
+        self.table.setColumnWidth(2, 500)
         date_column_index = 11  # replace with the actual index of your date column
         self.date_delegate = datedelegate.DateDelegate()
         self.table.setItemDelegateForColumn(cant_stay, self.date_delegate)
+        # kastil
 
     def on_cell_clicked(self, row, column):
         if ( self.cel_prev_row != row or self.cel_prev_col != column):
@@ -90,21 +111,25 @@ class StatsManager:
         self.cel_prev_row = row
         self.cel_prev_col = column
         date_column_index = 11  # replace with the actual index of your date column
-        if column == date_column_index:
+        if (column == date_column_index) and ((self.role == "admin" and self.table.item(row,group).text() == self.group) or self.role == "senioradmin") :
             self.table.openPersistentEditor(self.table.item(row, column))
             self.current_widget = self.table.cellWidget(row, column)
             self.par=1
-        if column == rank or column==position:
+        if (column == rank or column==position) and self.role == "senioradmin":
             combo_box = QComboBox()
             self.prev_combobox_text=self.table.item(row, column).text()
             # Determine possible values based on the column
             if column == rank:
-                combo_box.addItems(["сол.", "с-т"])  # Replace with your rank values
+                combo_box.addItems(["сол.", "мол. с-т", "с-т","ст с-т","генерал"])  # Replace with your rank values
+                width = combo_box.fontMetrics().boundingRect(max(["сол.", "мол. с-т", "с-т","ст с-т","генерал"], key=len)).width()
+                combo_box.view().setFixedWidth(width+12)
             else:  # column == position
                 combo_box.addItems(["курсант", "командир","сержант","старшина"])  # Replace with your position values
+                combo_box.setMinimumWidth(combo_box.fontMetrics().boundingRect(max(["курсант", "командир","сержант","старшина"], key=len)).width())
 
             # Set the current value of the combobox
             current_text = self.table.item(row, column).text() if self.table.item(row, column) else ""
+
             combo_box.setCurrentText(current_text)
 
             # Connect the currentIndexChanged signal
@@ -115,6 +140,7 @@ class StatsManager:
             self.table.resizeColumnsToContents()
 
             self.current_widget = self.table.cellWidget(row, column)
+
 
     def save_changes_datepicker(self):
 
@@ -136,6 +162,7 @@ class StatsManager:
         else:
             self.table.closePersistentEditor(item)
             item.setText("None")
+            item.setIcon(self.icon)
         self.current_widget=None
 
 
@@ -147,7 +174,9 @@ class StatsManager:
         # Remove the combobox and replace it with the updated text
         self.table.removeCellWidget(row, column)
         self.table.setItem(row, column, QTableWidgetItem(text))
+        self.table.item(row, column).setIcon(self.icon)
         self.table.resizeColumnsToContents()
+
         print(self.prev_combobox_text, text)
         if self.prev_combobox_text != text:
             self.apply_changes_stats(row, column)
