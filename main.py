@@ -1,10 +1,7 @@
-import mysql.connector
-from config import host, user, password, database
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, \
-    QWidget, QHBoxLayout, QItemDelegate, QDateEdit, QComboBox, QMessageBox
+from cringe.config import host, user, password, database
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import Qt
 import warnings
 import sys
 

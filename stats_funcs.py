@@ -1,4 +1,3 @@
-from config import host, user, password, database
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, QWidget, QHBoxLayout, QItemDelegate, QDateEdit,QComboBox,QMessageBox
 from PyQt5.uic import loadUi
