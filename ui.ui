@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>80</y>
       <width>291</width>
-      <height>201</height>
+      <height>311</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -68,6 +68,46 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="search_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Пошук</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/search3.jpg</normaloff>D:/Downloads/search3.jpg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pdf_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>Експорт PDF</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/PDF5.png</normaloff>D:/Downloads/PDF5.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="settings_b">
        <property name="styleSheet">
         <string notr="true">text-align: left;</string>
@@ -78,6 +118,26 @@
        <property name="icon">
         <iconset>
          <normaloff>D:/Downloads/setting.png</normaloff>D:/Downloads/setting.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="faq_b">
+       <property name="styleSheet">
+        <string notr="true">text-align: left;</string>
+       </property>
+       <property name="text">
+        <string>FAQ</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>D:/Downloads/stats.png</normaloff>D:/Downloads/stats.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -119,7 +179,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="schedule_pg">
      <widget class="QLabel" name="schedule_l">
@@ -136,19 +196,159 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="logout_pg">
-     <widget class="QLabel" name="logout_l">
+    <widget class="QWidget" name="search_pg">
+     <widget class="QLabel" name="search_l">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>200</y>
+        <x>380</x>
+        <y>40</y>
         <width>68</width>
         <height>13</height>
        </rect>
       </property>
       <property name="text">
-       <string>ТИПА ВЫШЕЛ</string>
+       <string>Пошук</string>
       </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>70</y>
+        <width>181</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_5" native="true">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>130</y>
+        <width>220</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>201</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">text-align:center;</string>
+       </property>
+       <property name="text">
+        <string>сол. КОЗАК Б. О. С-15 Група</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget_3" native="true">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>76</width>
+         <height>73</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>56</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>21.02.2024</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>56</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>24.02.2024</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>56</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>02.03.2024</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="widget_4" native="true">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>40</y>
+         <width>120</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="label_14">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>93</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Дневальний курсу</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>93</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Дневальний курсу</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_13">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>93</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Помічник ЧНК 27</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="settings_pg">
@@ -372,6 +572,151 @@
       </property>
       <property name="text">
        <string>Затвердити</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="pdf_pg">
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>30</y>
+        <width>62</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>ЕСПОРТ PDF</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>180</y>
+        <width>78</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Вибрати дату</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>180</y>
+        <width>78</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Вибрати дату</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>130</y>
+        <width>56</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>24.02.2024</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>130</y>
+        <width>56</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>31.02.2024</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>110</y>
+        <width>12</width>
+        <height>39</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>540</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>ЕКСПОРТ</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="faq_pg">
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>70</y>
+        <width>139</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Вы довольны Буськом?</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>100</y>
+        <width>47</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Нет </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>20</y>
+        <width>21</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>FAQ</string>
       </property>
      </widget>
     </widget>
