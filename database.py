@@ -5,6 +5,7 @@ class DatabaseManager:
         self.connection = None
         self.host = host
         self.user = user
+        self.port = 3306
         self.password = password
         self.db_name = db_name
 
@@ -73,6 +74,29 @@ class DatabaseManager:
             print(f"MySQL Error: {e}")
             cursor.close()
             return None
+
+    # def decorator(self, func):
+    #     def inner(*args, **kwargs):
+    #         try:
+    #             connection = pymysql.connect(
+    #                 host=self.host,
+    #                 port=self.port,
+    #                 user=self.user,
+    #                 password=self.password,
+    #                 database=self.db_name)
+    #
+    #             with connection.cursor() as cursor:
+    #                 result = func(*args, cursor)
+    #                 return result
+    #         except Exception as e:
+    #             print(e)
+    #         finally:
+    #             if connection:
+    #                 connection.close()
+    #
+    #     return inner
+    #
+
     def close(self):
         if self.connection:
             self.connection.close()
