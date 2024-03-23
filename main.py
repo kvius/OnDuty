@@ -1,7 +1,10 @@
-from cringe.config import host, user, password, database
-from PyQt5.QtWidgets import QApplication, QMainWindow
+import mysql.connector
+from config import host, user, password, database
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, \
+    QWidget, QHBoxLayout, QItemDelegate, QDateEdit, QComboBox, QMessageBox, QVBoxLayout, QLabel
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QDate, Qt
 import warnings
 import sys
 
@@ -73,12 +76,49 @@ class MyWindow(QMainWindow):
         self.logout_b.clicked.connect(self.logout)
         self.settings_b.clicked.connect(self.display_settings)
         self.stats_b.clicked.connect(self.display_stats)
+        self.pdf_b.clicked.connect(self.display_pdf)
+        self.faq_b.clicked.connect(self.display_faq)
+        self.search_b.clicked.connect(self.display_search)
+
+        #faq
+        self.container = QWidget()  # Создаем контейнер для виджетов
+        self.layout = QVBoxLayout()  # Создаем вертикальное расположение для виджетов в контейнере
+        self.container.setLayout(self.layout)
+
+        self.faq_scroll.setWidget(self.container)  # Устанавливаем контейнер в качестве виджета для QScrollArea
+        self.faq_scroll.setWidgetResizable(True)
+        self.stretch_added = False# Разрешаем QScrollArea изменять размер контейнера
+        self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");
+
+
+
+
 
         # table
         self.stats_manager = StatsManager(self.combogroup, self.comboposition, self.combosex, self.stats_submit,
                                           db_manager,self.table, self,self.role_data)
 
+    def add_label(self, text):
+        if self.stretch_added:  # Если растяжимое пространство уже добавлено, удаляем его
+            self.layout.removeItem(self.layout.itemAt(self.layout.count() - 1))
+            self.stretch_added = False
 
+        label = QLabel(text)  # Создаем QLabel с текстом
+        label.setWordWrap(True)  # Разрешаем перенос слов, если текст не помещается
+        self.layout.addWidget(label)  # Добавляем QLabel в вертикальное расположение
+
+        if not self.stretch_added:  # Добавляем растяжимое пространство, если оно еще не добавлено
+            self.layout.addStretch()
+            self.stretch_added = True
+
+    def display_pdf(self):
+        self.stackedWidget.setCurrentWidget(self.pdf_pg)
+
+    def display_faq(self):
+        self.stackedWidget.setCurrentWidget(self.faq_pg)
+
+    def display_search(self):
+        self.stackedWidget.setCurrentWidget(self.search_pg)
     def display_schedule(self):
         result = self.db_manager.execute_query('''SELECT * FROM kurs ORDER BY id''')
         self.schedule_l.setText(result[0][1])

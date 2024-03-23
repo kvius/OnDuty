@@ -39,6 +39,7 @@ class StatsManager:
 
 
 
+
     def load_data_into_table(self):
         self.query_txt = ""
         self.par=0
@@ -102,6 +103,7 @@ class StatsManager:
         # kastil
 
     def on_cell_clicked(self, row, column):
+        print(1)
         if ( self.cel_prev_row != row or self.cel_prev_col != column):
             if self.current_widget:
                 if isinstance(self.current_widget, QDateEdit):
