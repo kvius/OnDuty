@@ -88,9 +88,8 @@ class MyWindow(QMainWindow):
         self.faq_scroll.setWidget(self.container)  # Устанавливаем контейнер в качестве виджета для QScrollArea
         self.faq_scroll.setWidgetResizable(True)
         self.stretch_added = False# Разрешаем QScrollArea изменять размер контейнера
-        self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");self.add_label(" text");
-
-
+        self.add_label("Как дышать?",bold=True)
+        self.add_label("Носом.")
 
 
 
@@ -98,13 +97,22 @@ class MyWindow(QMainWindow):
         self.stats_manager = StatsManager(self.combogroup, self.comboposition, self.combosex, self.stats_submit,
                                           db_manager,self.table, self,self.role_data)
 
-    def add_label(self, text):
+    from PyQt5.QtWidgets import QLabel
+    from PyQt5.QtGui import QFont
+
+    def add_label(self, text, bold=False):
         if self.stretch_added:  # Если растяжимое пространство уже добавлено, удаляем его
             self.layout.removeItem(self.layout.itemAt(self.layout.count() - 1))
             self.stretch_added = False
 
         label = QLabel(text)  # Создаем QLabel с текстом
         label.setWordWrap(True)  # Разрешаем перенос слов, если текст не помещается
+
+        if bold:  # Проверяем, должен ли текст быть жирным
+            font = label.font()  # Получаем текущий шрифт
+            font.setBold(True)  # Устанавливаем шрифт жирным
+            label.setFont(font)  # Применяем шрифт к label
+
         self.layout.addWidget(label)  # Добавляем QLabel в вертикальное расположение
 
         if not self.stretch_added:  # Добавляем растяжимое пространство, если оно еще не добавлено
@@ -120,8 +128,6 @@ class MyWindow(QMainWindow):
     def display_search(self):
         self.stackedWidget.setCurrentWidget(self.search_pg)
     def display_schedule(self):
-        result = self.db_manager.execute_query('''SELECT * FROM kurs ORDER BY id''')
-        self.schedule_l.setText(result[0][1])
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
 
 
