@@ -15,7 +15,7 @@ from database import DatabaseManager
 from stats_funcs import StatsManager
 
 from test import *
-from schedule_arr import arr,fill_schedule_table
+from schedule_arr import arr,fill_schedule_table,cell_clicked
 print(arr)
 
 print(id)
@@ -207,6 +207,7 @@ class MyWindow(QMainWindow):
     def display_schedule(self):
 
 
+
         # Customize table backgrounds
         for row in range(self.schedule_table.rowCount()):
             for col in range(self.schedule_table.columnCount()):
@@ -216,7 +217,8 @@ class MyWindow(QMainWindow):
                     self.schedule_table.setItem(row, col, item)
         fill_schedule_table(self.schedule_table, arr)
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
-
+        # сместить
+        self.schedule_table.cellClicked.connect(lambda row, col: cell_clicked(row, col, self.schedule_table))
     def logout(self):
         # Placeholder (add confirmation dialog if you like)
         self.login_window = LoginWindow(self.db_manager)
