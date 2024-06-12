@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QMessageBox, QApplication, QVBoxLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QMessageBox, QApplication, QVBoxLayout, QLabel, QWidget, \
+    QComboBox
 from PyQt5.QtCore import Qt
+import sys
 
 
 def show_chp_details(details):
@@ -14,7 +16,7 @@ def show_chp_details(details):
         name_label.setProperty('id', person['id'])
         name_label.setProperty('group', person['group'])
         name_label.setProperty('name', person['name'])
-        name_label.linkActivated.connect(lambda: person_clicked(person))
+        name_label.linkActivated.connect(lambda _, p=person: cell_clicked(None, None, None, p))
         chp_layout.addWidget(name_label)
 
     chp_widget.setLayout(chp_layout)
@@ -61,7 +63,7 @@ def fill_schedule_table(schedule_table: QTableWidget, arr: dict):
                 item.setData(Qt.UserRole + 3, role)
                 schedule_table.setItem(row, col, item)
             else:
-                value_str = f"{value['name']} (группа {value['group']})" if isinstance(value, dict) else value
+                value_str = render_cell_text(value, role)
                 item = QTableWidgetItem(value_str)
                 if isinstance(value, dict):
                     item.setData(Qt.UserRole + 1, value['id'])
@@ -74,37 +76,98 @@ def fill_schedule_table(schedule_table: QTableWidget, arr: dict):
         col += 1
 
 
-def cell_clicked(row, col, schedule_table):
+def render_cell_text(value, role):
+    """
+    Renders the cell text based on the data.
+    """
+    if role == "cp" and isinstance(value, list):
+        return ", ".join(f"{person['name']} (группа {person['group']})" for person in value)
+    elif isinstance(value, dict):
+        return f"{value['name']} (группа {value['group']})"
+    else:
+        return str(value)
+
+
+def cell_clicked(row, col, schedule_table, person=None):
     """
     Обрабатывает нажатие на ячейку таблицы и выводит данные ячейки.
     """
-    modifiers = QApplication.keyboardModifiers()
-    ctrl_pressed = modifiers == Qt.ControlModifier
-    alt_pressed = modifiers == Qt.AltModifier
+    if person:
+        person_id = person['id']
+        person_group = person['group']
+        person_type = 'chp'
+    else:
+        modifiers = QApplication.keyboardModifiers()
+        ctrl_pressed = modifiers == Qt.ControlModifier
+        alt_pressed = modifiers == Qt.AltModifier
 
-    item = schedule_table.item(row, col)
-    if item:
+        item = schedule_table.item(row, col)
+        if not item:
+            return
+
         person_id = item.data(Qt.UserRole + 1)
         person_group = item.data(Qt.UserRole + 2)
         person_type = item.data(Qt.UserRole + 3)
+
         if ctrl_pressed:
-            msg = QMessageBox()
-            msg.setWindowTitle("Ctrl Clicked")
-            msg.setText(f"Ctrl key is pressed.\nID: {person_id}\nGroup: {person_group}\nType: {person_type}")
-            msg.exec_()
+            handle_ctrl_click(row, col, schedule_table, person_group)
+            return
         elif alt_pressed:
-            msg = QMessageBox()
-            msg.setWindowTitle("Alt Clicked")
-            msg.setText(f"Alt key is pressed.\nID: {person_id}\nGroup: {person_group}\nType: {person_type}")
-            msg.exec_()
+            handle_alt_click(row, col, schedule_table, person_group)
+            return
         elif person_type == "schp":
             chp_details = item.data(Qt.UserRole + 4)
             show_chp_details(chp_details)
-        else:
-            msg = QMessageBox()
-            msg.setWindowTitle("Cell Details")
-            msg.setText(f"ID: {person_id}\nGroup: {person_group}\nType: {person_type}")
-            msg.exec_()
+            return
+
+    msg = QMessageBox()
+    msg.setWindowTitle("Cell Details")
+    msg.setText(f"ID: {person_id}\nGroup: {person_group}\nType: {person_type}")
+    msg.exec_()
+
+
+def handle_ctrl_click(row, col, schedule_table, current_group):
+    """
+    Handles the Ctrl click event to display a combo box for group selection.
+    """
+    combo_box = QComboBox()
+    groups = ["Group 1", "Group 2", "Group 3", "Group 4", "Group 5"]
+    combo_box.addItems(groups)
+
+    combo_box.setCurrentIndex(current_group - 1 if current_group else 0)
+    schedule_table.setCellWidget(row, col, combo_box)
+
+    def on_group_selected():
+        selected_group = combo_box.currentIndex() + 1
+        schedule_table.removeCellWidget(row, col)
+        item = schedule_table.item(row, col)
+        item.setData(Qt.UserRole + 2, selected_group)
+        item.setData(Qt.UserRole + 1, None)  # Clear ID
+        item.setText(render_cell_text({"group": selected_group,"name":""}, item.data(Qt.UserRole + 3)))
+
+    combo_box.activated.connect(on_group_selected)
+
+
+def handle_alt_click(row, col, schedule_table, current_group):
+    """
+    Handles the Alt click event to display a combo box for name selection.
+    """
+    combo_box = QComboBox()
+    # This is a template list of names. Replace it with the actual names based on the group.
+    names = ["Name 1", "Name 2", "Name 3", "Name 4", "Name 5"]
+    combo_box.addItems(names)
+
+    schedule_table.setCellWidget(row, col, combo_box)
+
+    def on_name_selected():
+        selected_name = combo_box.currentText()
+        schedule_table.removeCellWidget(row, col)
+        item = schedule_table.item(row, col)
+        item.setData(Qt.UserRole + 1, selected_name)  # Assuming the name is being set as the ID temporarily
+        item.setText(render_cell_text({"name": selected_name, "group": current_group}, item.data(Qt.UserRole + 3)))
+
+    combo_box.activated.connect(on_name_selected)
+
 
 
 arr = {
