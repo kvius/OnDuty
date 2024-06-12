@@ -1,6 +1,8 @@
 import mysql.connector
+from pyqt5_plugins.examplebuttonplugin import QtGui
+
 from config import host, user, password, database
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAbstractItemView, QPushButton, QLineEdit, \
     QWidget, QHBoxLayout, QItemDelegate, QDateEdit, QComboBox, QMessageBox, QVBoxLayout, QLabel
 from PyQt5.uic import loadUi
@@ -13,11 +15,79 @@ from database import DatabaseManager
 from stats_funcs import StatsManager
 
 from test import *
+from schedule_arr import arr,fill_schedule_table
+print(arr)
 
 print(id)
 print(cant_stay)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)  # Ignore warnings
+
+
+
+from PyQt5.QtWidgets import QStyledItemDelegate
+from PyQt5.QtGui import QPainter, QColor, QPen
+from PyQt5.QtCore import Qt
+
+# Цвета
+colors = {
+    "yellow_border": QColor(255, 255, 0),
+    "blue_border": QColor(0, 0, 255),
+    "white_background": QColor(255, 255, 255),
+    "grey_background": QColor(220, 220, 220),
+    "white_border": QColor(255, 255, 255),
+    "main": QColor("#5A9BD5"),  # Red
+    "maindark": QColor("#4A8CC5"),  # Red
+}
+
+class BorderAndBackgroundDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        painter.save()
+
+        # Get the column number
+        col = index.column()
+
+        # Set background color for even columns to red
+        if col % 2 == 0:
+            painter.fillRect(option.rect, colors["main"])  # Red for even columns
+        else:
+            painter.fillRect(option.rect, colors["maindark"])  # Light grey for odd columns
+
+        # Call the base class method to paint the item
+        super().paint(painter, option, index)
+
+        # Set borders for the first 4 rows and the next 4 rows
+        row = index.row()
+        rect = option.rect
+
+        # Apply white border for odd columns
+
+        if row < 4:
+            pen = QPen(colors["yellow_border"], 2)  # Yellow border
+        elif 4 <= row < 8:
+            pen = QPen(colors["blue_border"], 2)  # Blue border
+        else:
+            pen = QPen(colors["white_border"], 2)  # White border
+
+        painter.setPen(pen)
+
+        if row == 0 or row == 4:
+            painter.drawLine(rect.topLeft(), rect.topRight())  # Top border
+
+        if row == 3 or row == 7:
+            painter.drawLine(rect.bottomLeft(), rect.bottomRight())  # Bottom border
+
+        if col == 0:
+            painter.drawLine(rect.topLeft(), rect.bottomLeft())  # Left border
+
+        if col == index.model().columnCount() - 1:
+            painter.drawLine(rect.topRight(), rect.bottomRight())  # Right border
+
+        painter.restore()
+
+
+        # Override borders for grey background cells to be white
+
 
 
 # Основной класс окна логина
@@ -97,8 +167,14 @@ class MyWindow(QMainWindow):
         self.stats_manager = StatsManager(self.combogroup, self.comboposition, self.combosex, self.stats_submit,
                                           db_manager,self.table, self,self.role_data)
 
+        #schedule
+        self.schedule_table.setItemDelegate(BorderAndBackgroundDelegate())
+
+
     from PyQt5.QtWidgets import QLabel
     from PyQt5.QtGui import QFont
+
+
 
     def add_label(self, text, bold=False):
         if self.stretch_added:  # Если растяжимое пространство уже добавлено, удаляем его
@@ -127,9 +203,19 @@ class MyWindow(QMainWindow):
 
     def display_search(self):
         self.stackedWidget.setCurrentWidget(self.search_pg)
-    def display_schedule(self):
-        self.stackedWidget.setCurrentWidget(self.schedule_pg)
 
+    def display_schedule(self):
+
+
+        # Customize table backgrounds
+        for row in range(self.schedule_table.rowCount()):
+            for col in range(self.schedule_table.columnCount()):
+                item = self.schedule_table.item(row, col)
+                if not item:
+                    item = QTableWidgetItem()
+                    self.schedule_table.setItem(row, col, item)
+        fill_schedule_table(self.schedule_table, arr)
+        self.stackedWidget.setCurrentWidget(self.schedule_pg)
 
     def logout(self):
         # Placeholder (add confirmation dialog if you like)
