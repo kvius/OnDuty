@@ -217,7 +217,7 @@ class MyWindow(QMainWindow):
                 if not item:
                     item = QTableWidgetItem()
                     self.schedule_table.setItem(row, col, item)
-        fill_schedule_table(self.schedule_table, arr)
+        fill_schedule_table(self.schedule_table, arr,self.db_manager)
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
         # сместить
         self.schedule_table.cellClicked.connect(lambda row, col: cell_clicked(row, col, self.schedule_table))

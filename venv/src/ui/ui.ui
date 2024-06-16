@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1141</width>
-    <height>688</height>
+    <height>695</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,8 +22,8 @@
   <property name="styleSheet">
    <string notr="true">/* Основное окно */
 QWidget {
-    background-color: gray; /* Зеленый */
-    color: #2F4F4F; /* Темно-серый для текста */
+    background-color: rgb(37, 56, 84); /* Зеленый */
+    color: white; /* Темно-серый для текста */
 }
 
 /* Кнопки */
@@ -357,7 +357,7 @@ QPushButton:pressed {
 }</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="schedule_pg">
        <widget class="QWidget" name="layoutWidget">
@@ -495,10 +495,13 @@ QPushButton:pressed {
          <bool>true</bool>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
+         <bool>true</bool>
         </attribute>
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>false</bool>
+        </attribute>
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>true</bool>
         </attribute>
         <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
          <bool>false</bool>
@@ -1755,8 +1758,8 @@ QPushButton:pressed {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>735</width>
-              <height>517</height>
+              <width>88</width>
+              <height>18</height>
              </rect>
             </property>
            </widget>
