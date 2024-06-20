@@ -605,17 +605,23 @@ QPushButton:pressed {
          </property>
         </item>
        </widget>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="schedule_date_l">
         <property name="geometry">
          <rect>
-          <x>371</x>
+          <x>361</x>
           <y>70</y>
-          <width>101</width>
+          <width>121</width>
           <height>29</height>
          </rect>
         </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">text-align:center;</string>
+        </property>
         <property name="text">
-         <string>41 неділя</string>
+         <string/>
         </property>
        </widget>
       </widget>
@@ -1758,8 +1764,8 @@ QPushButton:pressed {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>88</width>
-              <height>18</height>
+              <width>98</width>
+              <height>28</height>
              </rect>
             </property>
            </widget>

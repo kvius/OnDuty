@@ -15,8 +15,8 @@ from utils.database import DatabaseManager
 from utils.stats_funcs import StatsManager
 
 from utils.test import *
-from utils.schedule_arr import arr,fill_schedule_table,cell_clicked
-print(arr)
+from utils.schedule_arr import fill_schedule_table,cell_clicked
+
 
 print(id)
 print(cant_stay)
@@ -217,10 +217,10 @@ class MyWindow(QMainWindow):
                 if not item:
                     item = QTableWidgetItem()
                     self.schedule_table.setItem(row, col, item)
-        fill_schedule_table(self.schedule_table, arr,self.db_manager)
+        fill_schedule_table(self.schedule_table,self.db_manager,self)
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
         # сместить
-        self.schedule_table.cellClicked.connect(lambda row, col: cell_clicked(row, col, self.schedule_table))
+        self.schedule_table.cellClicked.connect(lambda row, col: cell_clicked(row, col, self.schedule_table,self.db_manager))
     def logout(self):
         # Placeholder (add confirmation dialog if you like)
         self.login_window = LoginWindow(self.db_manager)

@@ -40,6 +40,21 @@ class DatabaseManager:
             cursor.close()
             return None
 
+    def execute_script(self, script):
+        self.connect()
+        cursor = self.connection.cursor()
+        try:
+            for statement in script.split(';'):
+                if statement.strip():
+                    cursor.execute(statement)
+            self.connection.commit()
+            print("Script executed successfully.")
+        except mysql.connector.Error as e:
+            self.connection.rollback()
+            print(f"MySQL Error: {e}")
+        finally:
+            cursor.close()
+            self.close()
     def get_cur_date(self):
         """Retrieves the current date from the MySQL database."""
 
