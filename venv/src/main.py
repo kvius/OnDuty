@@ -170,6 +170,7 @@ class MyWindow(QMainWindow):
                                           db_manager,self.table, self,self.role_data)
 
         #schedule
+        self.schedule_date_l.setAlignment(Qt.AlignCenter)
         self.schedule_table.setItemDelegate(BorderAndBackgroundDelegate())
 
 

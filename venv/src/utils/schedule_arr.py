@@ -6,7 +6,12 @@ import datetime
 from PyQt5.QtCore import QDate
 
 def change_schedule_group(selected_group,role,db_manager,change_date):
-    query =f"UPDATE data_table SET {role + '_id'} = NULL, {role + '_group'} = {selected_group} WHERE `date` ='{change_date}'"
+    query =f"""
+    INSERT INTO data_table (date, {role + '_id'}, {role + '_group'})
+    VALUES ('{change_date}', NULL, {selected_group})
+    ON DUPLICATE KEY UPDATE
+    {role + '_id'} = NULL, {role + '_group'} = {selected_group};
+    """
     print(query)
     db_manager.execute_script(query)
 
@@ -14,7 +19,9 @@ def change_schedule_id(curr_id,new_id,role,db_manager,change_date):
     print(role)
     sb_exclude_plus,sb_exclude_minus = "",""
     date_obj = datetime.datetime.strptime(change_date, "%Y-%m-%d")
-    if date_obj.weekday()== 6:
+    print(date_obj.weekday())
+    if date_obj.weekday() == 5:
+
         if role != "schp":
             sb_exclude_plus = ", naryad_sb = naryad_sb + 1"
             sb_exclude_minus = ", naryad_sb = naryad_sb - 1"
@@ -318,6 +325,7 @@ def cell_clicked(row, col, schedule_table,db_manager, person=None):
             return
 
         person_id = item.data(Qt.UserRole + 1)
+
         person_group = item.data(Qt.UserRole + 2)
         type_n = item.data(Qt.UserRole + 3)
 
@@ -327,7 +335,7 @@ def cell_clicked(row, col, schedule_table,db_manager, person=None):
         if ctrl_pressed:
             handle_ctrl_click(row, col, schedule_table, person_group,db_manager)
             return
-        elif alt_pressed:
+        elif alt_pressed and person_group !=None:
             handle_alt_click(row, col, schedule_table, person_group,db_manager)
             return
         elif type_n == "schp":
