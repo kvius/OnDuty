@@ -5,6 +5,65 @@ import sys
 import datetime
 from PyQt5.QtCore import QDate
 
+import random
+
+
+def select_victim(type):
+    global result_dict
+    selected_candidates = []
+    print(type)
+    if type in ["chk", "chnk27"]:
+        # Выбор сержантов и старшин
+        selected_candidates = [(key, data['naryad'], data['group'])
+                               for key, data in result_dict.items()
+                               if data['position'] in ["сержант", "старшина"]]
+
+    elif type in ["dn1", "dn2", "pchnk271", "pchnk272", "pchnk273"]:
+        # Выбор курсантов-мужчин
+        selected_candidates = [(key, data['naryad'], data['group'])
+                               for key, data in result_dict.items()
+                               if data['position'] == "курсант" and data['sex'] == "Чоловік"]
+
+    elif type == "dng":
+        # Выбор курсантов-женщин
+        selected_candidates = [(key, data['naryad'], data['group'])
+                               for key, data in result_dict.items()
+                               if data['position'] == "курсант" and data['sex'] == "Жінка"]
+
+
+    elif type in ["chp1", "chp2", "chp3", "chp4", "chp5", "chp6", "chp7", "chp8", "chp9"]:
+        # Выбор курсантов, исключая сержантов и старшин
+        selected_candidates = [(key, data['chepe'], data['group'])
+                               for key, data in result_dict.items()
+                               if data['position'] == "курсант"]
+
+    elif type == "schp":
+        # Выбор курсантов-мужчин, исключая женщин
+        selected_candidates = [(key, data['chepe'], data['group'])
+                               for key, data in result_dict.items()
+                               if data['position'] == "курсант" and data['sex'] != "Жінка"]
+
+    # Поиск минимального значения naryad
+    if selected_candidates:
+        min_naryad = min(selected_candidates, key=lambda x: x[1])[1]
+        min_candidates = [(key, group) for key, naryad, group in selected_candidates if naryad == min_naryad]
+
+        # Случайный выбор кандидата с минимальным значением naryad
+        selected_candidate = random.choice(min_candidates)
+
+        # Обновление naryad и chepe выбранного кандидата
+        if type in ["chp", "schp"]:
+            result_dict[selected_candidate[0]]['chepe'] += 1
+        else:
+            result_dict[selected_candidate[0]]['naryad'] += 1
+
+
+        return selected_candidate
+
+    return None
+
+
+
 def change_schedule_group(selected_group,role,db_manager,change_date):
     query =f"""
     INSERT INTO data_table (date, {role + '_id'}, {role + '_group'})
@@ -68,13 +127,13 @@ def show_chp_details(details):
     chp_widget = QWidget()
     chp_layout = QVBoxLayout()
 
-    for person in details:
+    for key, person in details.items():
         name_label = QLabel(f"<a>{result_dict[person['id']]['pib']} (группа {person['group']})</a>")
         name_label.setTextFormat(Qt.RichText)
         name_label.setProperty('id', person['id'])
         name_label.setProperty('group', person['group'])
         name_label.setProperty('name', result_dict[person['id']]['pib'])
-        name_label.linkActivated.connect(lambda _, p=person: cell_clicked(None, None, None,None, p))
+        name_label.linkActivated.connect(lambda _, p=person: cell_clicked(None, None, None, None, p))
         chp_layout.addWidget(name_label)
 
     chp_widget.setLayout(chp_layout)
@@ -96,7 +155,8 @@ def person_clicked(person):
     msg.exec_()
 
 
-
+def call_fill(schedule_table,db_manager,root,new_date):
+    fill_schedule_table(schedule_table,db_manager,root,new_date)
 
 def get_week_boundaries(date):
     # Перевірка, чи введена дата є об'єктом datetime
@@ -119,10 +179,44 @@ def get_week_boundaries(date):
     return week_dates,start_of_week,end_of_week
 
 
-# Приклад використання функції
-date = datetime.date(2024, 6, 16)
-week_dates = get_week_boundaries(date)
 
+def select_ids(result_dict, type):
+    names_with_ids = []
+
+    if type in ["chk", "chnk27"]:
+        # Select sergeants and warrant officers
+        names_with_ids = [key for key, data in result_dict.items()
+                          if data['position'] in ["сержант", "старшина"]]
+
+    elif type in ["dn1", "dn2", "pchnk271", "pchnk272", "pchnk273"]:
+        # Select male cadets
+        names_with_ids = [key for key, data in result_dict.items()
+                          if data['position'] == "курсант" and data['sex'] == "Чоловік"]
+
+    elif type == "dng":
+        # Select female cadets
+        names_with_ids = [key for key, data in result_dict.items()
+                          if data['position'] == "курсант" and data['sex'] == "Жінка"]
+
+    elif type == "chp":
+        # Select cadets, excluding sergeants and warrant officers
+        names_with_ids = [key for key, data in result_dict.items()
+                          if data['position'] == "курсант"]
+
+    elif type in ["schp"]:
+        # Select male cadets, excluding women
+        names_with_ids = [key for key, data in result_dict.items()
+                          if data['position'] == "курсант" and data['sex'] != "Жінка"]
+
+    # Group by 'naryad'
+    grouped_names_with_ids = {}
+    for key in names_with_ids:
+        naryad = result_dict[key]['naryad']
+        if naryad not in grouped_names_with_ids:
+            grouped_names_with_ids[naryad] = []
+        grouped_names_with_ids[naryad].append(key)
+
+    return grouped_names_with_ids
 
 def select_names(result_dict, selected_group, type):
     names_with_ids = []
@@ -159,11 +253,13 @@ def select_names(result_dict, selected_group, type):
 
     return names_with_ids
 
+
 def get_data(date_list, start_of_week, end_of_week, db_manager):
-    rows=db_manager.execute_query(f'''
+    rows = db_manager.execute_query(f'''
     SELECT * FROM data_table WHERE date BETWEEN "{start_of_week}" AND "{end_of_week}"
     ''')
-    print(rows,start_of_week,end_of_week)
+    print(rows, start_of_week, end_of_week)
+
     # Обработка данных и заполнение отсутствующих дат
     empty_structure = {
         "chk": {"group": None, "id": None},
@@ -175,17 +271,9 @@ def get_data(date_list, start_of_week, end_of_week, db_manager):
         "pchnk272": {"group": None, "id": None},
         "pchnk273": {"group": None, "id": None},
         "schp": {"group": None, "id": None},
-        "chp": [
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None},
-            {"group": None, "id": None}
-        ]
+        "chp": {
+            f"chp{x}": {"group": None, "id": None} for x in range(1, 10)
+        }
     }
 
     # Обработка данных и заполнение отсутствующих дат
@@ -202,23 +290,68 @@ def get_data(date_list, start_of_week, end_of_week, db_manager):
             "pchnk272": {"group": row[13], "id": row[14]},
             "pchnk273": {"group": row[15], "id": row[16]},
             "schp": {"group": row[17], "id": row[18]},
-            "chp": [
-                {"group": row[19], "id": row[20]},
-                {"group": row[21], "id": row[22]},
-                {"group": row[23], "id": row[24]},
-                {"group": row[25], "id": row[26]},
-                {"group": row[27], "id": row[28]},
-                {"group": row[29], "id": row[30]},
-                {"group": row[31], "id": row[32]},
-                {"group": row[33], "id": row[34]},
-                {"group": row[35], "id": row[36]}
-            ]
+            "chp": {
+                f"chp{x}": {"group": row[2 * x + 17], "id": row[2 * x + 18]} for x in range(1, 10)
+            }
         }
 
     # Преобразование в формат JSON
     return data_dict
 
-def fill_schedule_table(schedule_table: QTableWidget,db_manager,root):
+
+def fill_database(date,db_manager,key):
+    print(date,db_manager,key)
+
+
+def iterate_missing_data(data_dict, date_list, db_manager, result_dict, root):
+    # Define the keys to skip if checkboxes are not checked
+    keys_to_skip = ["pchnk271", "pchnk272", "pchnk273", "chnk27", "schp"]  # Removed "chp" as it's now a dictionary
+
+    # Map checkboxes to their indices
+    checkbox_mapping = {
+        0: root.check_1,
+        1: root.check_2,
+        2: root.check_3,
+        3: root.check_4,
+        4: root.check_5,
+        5: root.check_6,
+        6: root.check_7
+    }
+
+    for idx, (date, entries) in enumerate(data_dict.items()):
+        query = f"UPDATE data_table SET "
+        # Check if the corresponding checkbox is checked
+        if not checkbox_mapping[idx].isChecked():
+            # If the checkbox is not checked, skip the specific keys for this date
+            entries = {k: v for k, v in entries.items() if k not in keys_to_skip}
+            # Also, skip keys inside the 'chp' dictionary
+            if 'chp' in entries:
+                entries['chp'] = {k: v for k, v in entries['chp'].items() if k not in keys_to_skip}
+        for role, value in entries.items():
+            print(role,value)
+            if isinstance(value, dict) and role != "chp":
+                if value["id"] is None:
+                    person = select_victim(role)
+                    id = person[0]
+                    group = person[1]
+                    query += f"{role + '_id'} = {id}, {role + '_group'} = {group},"
+            elif isinstance(value, dict) and role == "chp":
+                for sub_role, sub_value in value.items():
+                    if sub_value["id"] is None:
+                        person = select_victim(sub_role)
+                        id = person[0]
+                        group = person[1]
+                        query += f"{sub_role + '_id'} = {id}, {sub_role + '_group'} = {group},"
+        query = query[:-1]
+        print(query)
+        query += f" WHERE `date` = '{date}';"
+        db_manager.execute_script(query)
+
+
+
+
+
+def fill_schedule_table(schedule_table: QTableWidget,db_manager,root,cur_date):
     """
     Заполняет таблицу schedule_table данными из массива arr с включением групп.
 
@@ -226,16 +359,25 @@ def fill_schedule_table(schedule_table: QTableWidget,db_manager,root):
     :param arr: dict, массив с данными
 
     """
+    if cur_date == False:
+        cur_date=db_manager.get_cur_date()
 
-    cur_date=db_manager.get_cur_date()
     week_dates, start_of_week, end_of_week =get_week_boundaries(cur_date)
     start_view = start_of_week.strftime('%m.%d')
     end_view = end_of_week.strftime('%m.%d')
-    root.schedule_date_l.setText(f"{start_view}-{end_view}")
+
+    try:
+        root.schedule_button_l.clicked.disconnect()
+        root.schedule_button_r.clicked.disconnect()
+    except TypeError:
+        pass
+
+
+
     arr=get_data(week_dates, start_of_week, end_of_week, db_manager)
     schedule_table.setHorizontalHeaderLabels(week_dates)
     # Выполните запрос и получите результаты
-    results = db_manager.execute_query("SELECT id, pib, `group`, naryad, kurs, nk, sex, `position` FROM kurs ORDER BY naryad")
+    results = db_manager.execute_query("SELECT id, pib, `group`, naryad, kurs, nk, sex, `position`,chepe FROM kurs ORDER BY naryad")
     global result_dict
     # Преобразуйте результаты в словарь
     result_dict = {
@@ -247,11 +389,15 @@ def fill_schedule_table(schedule_table: QTableWidget,db_manager,root):
             'kurs': row[4],
             'nk': row[5],
             'sex': row[6],
-            'position': row[7]
+            'position': row[7],
+            'chepe': row[8]
         }
         for row in results
     }
-
+    root.schedule_date_l.setText(f"{start_view}-{end_view}")
+    root.schedule_button_l.clicked.connect(lambda : call_fill(schedule_table,db_manager,root,start_of_week-datetime.timedelta(days=1)))
+    root.schedule_button_r.clicked.connect(lambda: call_fill(schedule_table, db_manager, root, end_of_week + datetime.timedelta(days=1)))
+    root.calculate_schedule.clicked.connect(lambda: iterate_missing_data(arr,week_dates,db_manager,result_dict,root))
     # Вывод результата для проверки
     #for key, value in result_dict.items():
         #print(f"id: {key}, data: {value}")
@@ -282,7 +428,7 @@ def fill_schedule_table(schedule_table: QTableWidget,db_manager,root):
                     item.setData(Qt.UserRole + 2, value['group'])
                 item.setData(Qt.UserRole + 3, role)
                 if role == "schp":
-                    item.setData(Qt.UserRole + 4, roles.get("chp", []))  # Store CHP details for later use
+                    item.setData(Qt.UserRole + 4, roles.get("chp", {}))  # Store CHP details for later use
                 schedule_table.setItem(row, col, item)
             row += 1
         col += 1
@@ -306,7 +452,7 @@ def render_cell_text(value, role):
         return str(value)
 
 
-def cell_clicked(row, col, schedule_table,db_manager, person=None):
+def cell_clicked(row, col, schedule_table, db_manager, person=None):
     """
     Обрабатывает нажатие на ячейку таблицы и выводит данные ячейки.
     """
@@ -319,24 +465,27 @@ def cell_clicked(row, col, schedule_table,db_manager, person=None):
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = modifiers == Qt.ControlModifier
         alt_pressed = modifiers == Qt.AltModifier
+        shift_pressed = modifiers == Qt.ShiftModifier
 
         item = schedule_table.item(row, col)
         if not item:
             return
 
         person_id = item.data(Qt.UserRole + 1)
-
         person_group = item.data(Qt.UserRole + 2)
         type_n = item.data(Qt.UserRole + 3)
 
-
         # Place the column name into the 5th data slot
         item.setData(Qt.UserRole + 5, column_name)
+
         if ctrl_pressed:
-            handle_ctrl_click(row, col, schedule_table, person_group,db_manager)
+            handle_ctrl_click(row, col, schedule_table, person_group, db_manager)
             return
-        elif alt_pressed and person_group !=None:
-            handle_alt_click(row, col, schedule_table, person_group,db_manager)
+        elif alt_pressed and person_group is not None:
+            handle_alt_click(row, col, schedule_table, person_group, db_manager)
+            return
+        elif shift_pressed:
+            delete_data(row, col, schedule_table, db_manager)
             return
         elif type_n == "schp":
             chp_details = item.data(Qt.UserRole + 4)
@@ -347,6 +496,33 @@ def cell_clicked(row, col, schedule_table,db_manager, person=None):
     msg.setWindowTitle("Cell Details")
     msg.setText(f"ID: {person_id}\nGroup: {person_group}\nType: {type_n}")
     msg.exec_()
+
+
+def delete_data(row, col, schedule_table, db_manager):
+    """
+    Удаляет данные в указанной ячейке таблицы и обновляет базу данных.
+    """
+    item = schedule_table.item(row, col)
+    if item:
+        person_id = item.data(Qt.UserRole + 1)
+        column_name = schedule_table.horizontalHeaderItem(col).text()
+
+        # Удаление данных из базы данных
+        #db_manager.delete_data(person_id, column_name)
+
+        # Очистка данных ячейки
+        item.setData(Qt.UserRole + 1, None)
+        item.setData(Qt.UserRole + 2, None)
+        item.setData(Qt.UserRole + 3, None)
+        item.setData(Qt.UserRole + 4, None)
+        item.setData(Qt.UserRole + 5, None)
+        item.setText("")
+
+        # Уведомление об успешном удалении данных
+        msg = QMessageBox()
+        msg.setWindowTitle("Delete Data")
+        msg.setText("Data has been deleted successfully.")
+        msg.exec_()
 
 
 def handle_ctrl_click(row, col, schedule_table, current_group,db_manager):
@@ -387,6 +563,8 @@ def handle_alt_click(row, col, schedule_table, selected_group,db_manager):
     selected_group = item.data(Qt.UserRole + 2)
 
     # Фильтруем людей по текущей группе
+    ids = select_ids(result_dict, item.data(Qt.UserRole + 3))
+    print(ids)
     names_with_ids = select_names(result_dict, selected_group, item.data(Qt.UserRole + 3))
 
     # Создаем и заполняем комбо-бокс

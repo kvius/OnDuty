@@ -18,6 +18,7 @@ class DatabaseManager:
         )
 
     def load_data(self, query):
+        self.connect()
         cursor = self.connection.cursor()
         try:
             cursor.execute(query)
@@ -29,6 +30,7 @@ class DatabaseManager:
             cursor.close()
 
     def execute_query(self, query):
+        self.connect()
         cursor = self.connection.cursor()
         cursor.execute(query)
         try:
@@ -90,27 +92,7 @@ class DatabaseManager:
             cursor.close()
             return None
 
-    # def decorator(self, func):
-    #     def inner(*args, **kwargs):
-    #         try:
-    #             connection = pymysql.connect(
-    #                 host=self.host,
-    #                 port=self.port,
-    #                 user=self.user,
-    #                 password=self.password,
-    #                 database=self.db_name)
-    #
-    #             with connection.cursor() as cursor:
-    #                 result = func(*args, cursor)
-    #                 return result
-    #         except Exception as e:
-    #             print(e)
-    #         finally:
-    #             if connection:
-    #                 connection.close()
-    #
-    #     return inner
-    #
+
 
     def close(self):
         if self.connection:

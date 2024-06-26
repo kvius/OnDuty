@@ -174,6 +174,7 @@ class MyWindow(QMainWindow):
         self.schedule_table.setItemDelegate(BorderAndBackgroundDelegate())
 
 
+
     from PyQt5.QtWidgets import QLabel
     from PyQt5.QtGui import QFont
 
@@ -218,7 +219,7 @@ class MyWindow(QMainWindow):
                 if not item:
                     item = QTableWidgetItem()
                     self.schedule_table.setItem(row, col, item)
-        fill_schedule_table(self.schedule_table,self.db_manager,self)
+        fill_schedule_table(self.schedule_table,self.db_manager,self,False)
         self.stackedWidget.setCurrentWidget(self.schedule_pg)
         # сместить
         self.schedule_table.cellClicked.connect(lambda row, col: cell_clicked(row, col, self.schedule_table,self.db_manager))
